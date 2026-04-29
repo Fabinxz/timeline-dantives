@@ -6,8 +6,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative flex flex-col items-center justify-center overflow-hidden"
-      style={{ minHeight: "75vh" }}
+      className="relative flex flex-col items-center justify-center overflow-hidden py-16 md:py-20"
     >
       {/* ── Grid lines background ── */}
       <div
@@ -24,10 +23,10 @@ export default function Hero() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: "easeOut" }}
-        className="relative z-10 px-4 sm:px-8 max-w-5xl mx-auto w-full pt-10"
+        className="relative z-10 px-4 sm:px-8 max-w-5xl mx-auto w-full"
       >
         <h1
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-8 md:mb-12 text-[#00F5FF] tracking-tight"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 md:mb-8 text-[#00F5FF] tracking-tight"
         >
           Primeira calculadora da história:
         </h1>
@@ -41,14 +40,6 @@ export default function Hero() {
           </p>
         </div>
       </motion.div>
-
-      {/* ── Bottom fade ── */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
-        style={{
-          background: "linear-gradient(to top, #050505, transparent)",
-        }}
-      />
     </section>
   );
 }

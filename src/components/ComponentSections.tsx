@@ -27,7 +27,7 @@ function ComponentSection({
   return (
     <section
       id={id}
-      className="relative w-full px-4 sm:px-6 md:px-8 py-16 sm:py-20 md:py-28"
+      className="relative w-full px-4 sm:px-6 md:px-8 py-10 sm:py-12 md:py-16"
     >
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
@@ -36,7 +36,7 @@ function ComponentSection({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.8 }}
-          className="mb-10 sm:mb-14"
+          className="mb-6 sm:mb-8"
         >
           <div className="flex items-center gap-2 mb-3">
             {icon}
@@ -61,34 +61,10 @@ function ComponentSection({
           </p>
         </motion.div>
 
-        {/* Component container */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, amount: 0.1 }}
-          transition={{ duration: 1 }}
-          className="
-            relative w-full rounded-xl overflow-hidden
-            border border-white/[0.06]
-            backdrop-blur-sm
-          "
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(8,8,8,0.6) 0%, rgba(5,5,5,0.9) 100%)",
-            minHeight: "300px",
-          }}
-        >
-          {/* Top accent line */}
-          <div
-            className="absolute top-0 left-0 right-0 h-px"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent 10%, rgba(0,245,255,0.15) 50%, transparent 90%)",
-            }}
-          />
-
+        {/* Component container (Invisible) */}
+        <div className="relative w-full">
           {children}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

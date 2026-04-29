@@ -2,7 +2,6 @@ import Hero from "@/components/Hero";
 import BentoGrid from "@/components/BentoGrid";
 import { TimelineSection, SimulatorSection } from "@/components/ComponentSections";
 import Timeline from "@/components/Timeline";
-import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
@@ -21,7 +20,7 @@ export default function Home() {
       {/* ════════ SOROBAN_SIMULATOR ════════ */}
       <SimulatorSection>
         {/* Soroban will be embedded here — currently served as standalone HTML */}
-        <div className="flex items-center justify-center py-20">
+        <div className="flex items-center justify-center py-4">
           <iframe
             src="/soroban.html"
             title="Simulador de Soroban"
@@ -35,9 +34,6 @@ export default function Home() {
           />
         </div>
       </SimulatorSection>
-
-      {/* ════════ FOOTER ════════ */}
-      <Footer />
     </main>
   );
 }

@@ -161,7 +161,7 @@ export default function BentoGrid() {
   return (
     <section
       id="conteudo"
-      className="relative w-full px-4 sm:px-6 md:px-8 py-16 sm:py-20 md:py-28"
+      className="relative w-full px-4 sm:px-6 md:px-8 py-10 sm:py-12 md:py-16"
     >
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
@@ -170,7 +170,7 @@ export default function BentoGrid() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.8 }}
-          className="mb-10 sm:mb-14"
+          className="mb-6 sm:mb-8"
         >
           <p
             className="text-[10px] sm:text-xs tracking-[5px] uppercase mb-3"
