@@ -9,9 +9,6 @@ export default function Home() {
       {/* ════════ HERO ════════ */}
       <Hero />
 
-      {/* ════════ BENTO GRID — Enriquecimento Teórico ════════ */}
-      <BentoGrid />
-
       {/* ════════ TIMELINE_COMPONENT ════════ */}
       <TimelineSection>
         <Timeline />
@@ -34,6 +31,9 @@ export default function Home() {
           />
         </div>
       </SimulatorSection>
+
+      {/* ════════ BENTO GRID — Enriquecimento Teórico ════════ */}
+      <BentoGrid />
     </main>
   );
 }
