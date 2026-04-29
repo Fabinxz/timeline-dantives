@@ -22,7 +22,7 @@ interface TimelineEvent {
   image: string;
 }
 
-const TIMELINE_DATA: TimelineEvent[] = [
+  const TIMELINE_DATA: TimelineEvent[] = [
   {
     id: 1,
     year: "2700 a.C.",

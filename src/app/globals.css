@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #0A0A0A;
+  --color-background: #090809;
   --color-foreground: #ededed;
   --color-neon: #00F5FF;
   --color-neon-dim: rgba(0, 245, 255, 0.15);
@@ -22,7 +22,7 @@ html {
 }
 
 body {
-  background: #0A0A0A;
+  background: #090809;
   color: var(--color-foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
