@@ -308,7 +308,7 @@ export default function Timeline() {
   return (
     <section
       ref={containerRef}
-      className="relative w-full min-h-screen px-3 sm:px-4 md:px-8 py-10 sm:py-16 md:py-24"
+      className="relative w-full px-3 sm:px-4 md:px-8 pb-0"
     >
       {/* ════════ TIMELINE SPINE ════════ */}
       <div className="relative max-w-4xl mx-auto">

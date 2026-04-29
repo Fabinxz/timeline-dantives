@@ -27,7 +27,7 @@ function ComponentSection({
   return (
     <section
       id={id}
-      className="relative w-full px-4 sm:px-6 md:px-8 py-10 sm:py-12 md:py-16"
+      className="relative w-full px-4 sm:px-6 md:px-8 pt-10 sm:pt-12 md:pt-16 pb-2"
     >
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
