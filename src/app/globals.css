@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: #0A0A0A;
+  --color-foreground: #ededed;
+  --color-neon: #00F5FF;
+  --color-neon-dim: rgba(0, 245, 255, 0.15);
+  --color-card-bg: rgba(0, 0, 0, 0.60);
+  --color-card-border: #1f2937;
+  --color-card-border-active: #00F5FF;
+  --color-text-muted: #E0E0E0;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Inter', sans-serif;
+}
+
+/* ═══════ BASE ═══════ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #0A0A0A;
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══════ SCROLLBAR ═══════ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 245, 255, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 245, 255, 0.3);
+}
+
+/* ═══════ NEON GLOW LINE ═══════ */
+.timeline-line {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 245, 255, 0.06) 5%,
+    rgba(0, 245, 255, 0.12) 50%,
+    rgba(0, 245, 255, 0.06) 95%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 8px rgba(0, 245, 255, 0.15),
+    0 0 20px rgba(0, 245, 255, 0.06);
+}
+
+/* ═══════ NEON PULSE DOT ═══════ */
+@keyframes neon-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 6px rgba(0, 245, 255, 0.6),
+      0 0 16px rgba(0, 245, 255, 0.3),
+      0 0 30px rgba(0, 245, 255, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 10px rgba(0, 245, 255, 0.9),
+      0 0 25px rgba(0, 245, 255, 0.5),
+      0 0 50px rgba(0, 245, 255, 0.2);
+  }
+}
+
+.neon-dot {
+  animation: neon-pulse 2.5s ease-in-out infinite;
+}
+
+/* ═══════ CARD GLOW BORDER ═══════ */
+@keyframes border-glow {
+  0%, 100% { border-color: rgba(0, 245, 255, 0.2); }
+  50% { border-color: rgba(0, 245, 255, 0.6); }
+}
+
+.card-glow {
+  animation: border-glow 2s ease-in-out infinite;
+}
+
+/* ═══════ NODE DOT ═══════ */
+.node-dot {
+  transition: all 0.4s ease;
+}
+.node-dot.active {
+  background: #00F5FF;
+  box-shadow:
+    0 0 8px rgba(0, 245, 255, 0.6),
+    0 0 20px rgba(0, 245, 255, 0.3);
+}
