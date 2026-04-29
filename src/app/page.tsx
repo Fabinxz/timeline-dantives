@@ -2,7 +2,6 @@ import Hero from "@/components/Hero";
 import BentoGrid from "@/components/BentoGrid";
 import { TimelineSection, SimulatorSection } from "@/components/ComponentSections";
 import Timeline from "@/components/Timeline";
-import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
@@ -35,9 +34,6 @@ export default function Home() {
 
       {/* ════════ BENTO GRID — Enriquecimento Teórico ════════ */}
       <BentoGrid />
-
-      {/* ════════ FOOTER ════════ */}
-      <Footer />
     </main>
   );
 }
