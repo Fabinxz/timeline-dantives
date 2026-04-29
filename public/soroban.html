@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Soroban — Simulador Interativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{
+  width:100%;height:100%;
+  background:#090809;
+  overflow:hidden;
+}
+body{
+  width:100%;height:100%;
+  overflow:hidden;
+  background:#090809;
+  font-family:'JetBrains Mono',monospace;
+  color:#fff;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  touch-action:manipulation;
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT — fills 100% of viewport
+   ═══════════════════════════════════════════ */
+.container{
+  display:flex;flex-direction:column;align-items:center;
+  width:100%;height:100vh;height:100dvh;
+  padding:6px;gap:4px;
+  position:relative;z-index:1;
+  overflow:hidden;
+}
+
+/* ═══════════════════════════════════════════
+   LCD DISPLAY — CRT EFFECT
+   ═══════════════════════════════════════════ */
+.lcd-panel{
+  width:100%;max-width:960px;flex-shrink:0;
+  padding:8px 12px 10px;
+  background:linear-gradient(180deg,rgba(0,20,20,0.7),rgba(0,10,10,0.9));
+  border:1px solid rgba(0,245,255,0.1);
+  border-top:2px solid rgba(0,245,255,0.15);
+  border-radius:4px;
+  text-align:center;position:relative;overflow:hidden;
+}
+/* CRT inner glow */
+.lcd-panel::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 50%,rgba(0,245,255,0.04),transparent 70%);
+  pointer-events:none;
+}
+/* Top highlight line */
+.lcd-panel::after{
+  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,245,255,0.4),transparent);
+}
+.lcd-label{
+  font-size:7px;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(0,245,255,0.3);margin-bottom:2px;
+}
+.lcd-value{
+  font-family:'JetBrains Mono',monospace;
+  font-size:clamp(22px,7vw,54px);font-weight:500;
+  color:#00F5FF;letter-spacing:clamp(4px,1.5vw,8px);line-height:1.1;
+  text-shadow:0 0 8px rgba(0,245,255,0.6),0 0 25px rgba(0,245,255,0.3),0 0 50px rgba(0,245,255,0.1);
+  animation:crt-flicker 4s ease-in-out infinite;
+}
+@keyframes crt-flicker{
+  0%,100%{opacity:1}
+  92%{opacity:1}
+  93%{opacity:0.85}
+  94%{opacity:1}
+  96%{opacity:0.92}
+  97%{opacity:1}
+}
+.lcd-value.flash{
+  text-shadow:0 0 15px rgba(0,245,255,1),0 0 40px rgba(0,245,255,0.5),0 0 80px rgba(0,245,255,0.25);
+}
+
+/* ═══════════════════════════════════════════
+   SOROBAN FRAME — MILITARY CONSOLE
+   ═══════════════════════════════════════════ */
+.soroban-frame{
+  position:relative;width:100%;max-width:960px;
+  background:#090809;
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:6px;
+  padding:24px 8px 8px;
+  flex:1;min-height:0;
+  display:flex;flex-direction:column;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.03);
+}
+/* Inner bevel highlight */
+.soroban-frame::before{
+  content:'';position:absolute;inset:3px;
+  border:1px solid rgba(255,255,255,0.03);
+  border-bottom-color:transparent;border-right-color:transparent;
+  border-radius:4px;pointer-events:none;z-index:0;
+}
+
+/* ── HEX SCREWS ── */
+.hex-screw{
+  position:absolute;width:10px;height:10px;z-index:20;
+  background:radial-gradient(circle at 40% 35%,#3a3a3a,#1a1a1a 70%);
+  clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+}
+.hex-screw::after{
+  content:'';position:absolute;inset:2px;
+  background:radial-gradient(circle at 45% 40%,#444,#222 80%);
+  clip-path:polygon(50% 15%,85% 32%,85% 68%,50% 85%,15% 68%,15% 32%);
+}
+.screw-tl{top:6px;left:6px}.screw-tr{top:6px;right:6px}
+.screw-bl{bottom:6px;left:6px}.screw-br{bottom:6px;right:6px}
+
+/* ── RESET BUTTON ── */
+.reset-btn{
+  position:absolute;top:4px;right:24px;z-index:10;
+  background:linear-gradient(180deg,#1e1e1e,#141414);
+  border:1px solid #333;border-bottom-color:#222;
+  color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace;
+  font-size:7px;padding:3px 8px;border-radius:3px;cursor:pointer;
+  letter-spacing:2px;text-transform:uppercase;
+  transition:all .3s ease;
+  box-shadow:0 1px 4px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.reset-btn:hover{
+  background:linear-gradient(180deg,#222,#1a1a1a);
+  border-color:rgba(0,245,255,0.25);color:#00F5FF;
+  box-shadow:0 0 12px rgba(0,245,255,0.15),inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.reset-btn:active{transform:scale(0.95);color:#00F5FF;}
+
+/* ═══════════════════════════════════════════
+   RODS & SECTIONS
+   ═══════════════════════════════════════════ */
+.rods-area{display:flex;justify-content:space-around;width:100%;position:relative;z-index:1}
+
+.rod{
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;flex:1;
+}
+
+/* Carbon-fiber rod line */
+.rod-line{
+  position:absolute;top:0;bottom:0;left:50%;width:3px;
+  transform:translateX(-50%);
+  background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,0.03) 0px,transparent 1px,transparent 2px),
+    linear-gradient(180deg,#2a2a2a,#1a1a1a,#2a2a2a);
+  border-radius:2px;z-index:0;
+  box-shadow:inset 0 0 2px rgba(0,0,0,0.8),0 0 1px rgba(255,255,255,0.03);
+}
+
+/* Heights set dynamically via JS */
+.heaven{position:relative;width:100%;z-index:1}
+.earth{position:relative;width:100%;z-index:1}
+
+/* ── RECKONING BAR ── */
+.bar-wrapper{
+  width:calc(100% + 16px);margin-left:-8px;height:6px;flex-shrink:0;
+  position:relative;z-index:5;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,0.02) 0px,rgba(255,255,255,0.04) 1px,transparent 1px,transparent 4px),
+    linear-gradient(180deg,#333,#222,#1a1a1a);
+  border-top:1px solid rgba(255,255,255,0.08);
+  border-bottom:1px solid rgba(0,0,0,0.5);
+  box-shadow:0 0 15px rgba(0,245,255,0.08),0 2px 6px rgba(0,0,0,0.5);
+}
+.bar-wrapper::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 5%,rgba(0,245,255,0.15) 50%,transparent 95%);
+}
+
+/* ═══════════════════════════════════════════
+   BEADS — BICONIC HEXAGONAL
+   ═══════════════════════════════════════════ */
+.bead{
+  position:absolute;left:50%;
+  transform:translateX(-50%);
+  /* Size set dynamically via JS */
+  clip-path:polygon(15% 0%,85% 0%,100% 50%,85% 100%,15% 100%,0% 50%);
+  cursor:pointer;z-index:3;
+  /* Transition with bounce */
+  transition:
+    top 0.4s cubic-bezier(0.22,1.4,0.36,1),
+    filter 0.3s ease,
+    opacity 0.2s ease;
+  /* Inactive: dark metallic 3D */
+  background:
+    radial-gradient(ellipse at 40% 30%,rgba(255,255,255,0.08),transparent 60%),
+    linear-gradient(180deg,#444 0%,#2a2a2a 45%,#1f1f1f 100%);
+  box-shadow:none;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,0.7));
+}
+.bead::before{
+  content:'';position:absolute;inset:0;
+  clip-path:polygon(15% 0%,85% 0%,100% 50%,85% 100%,15% 100%,0% 50%);
+  background:linear-gradient(180deg,rgba(255,255,255,0.06) 0%,transparent 40%,rgba(0,0,0,0.15) 100%);
+  pointer-events:none;
+}
+/* Inner ridge detail */
+.bead::after{
+  content:'';position:absolute;
+  top:35%;left:12%;right:12%;height:30%;
+  clip-path:polygon(10% 0%,90% 0%,100% 50%,90% 100%,10% 100%,0% 50%);
+  background:rgba(0,0,0,0.2);
+  pointer-events:none;
+}
+
+.bead:hover{
+  transform:translateX(-50%) scale(1.08);
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6)) brightness(1.15);
+}
+.bead:active{transform:translateX(-50%) scale(0.93)}
+
+/* ── ACTIVE BEAD: NEON LENS ── */
+.bead.active{
+  background:
+    radial-gradient(ellipse at 45% 35%,rgba(255,255,255,0.35),transparent 55%),
+    radial-gradient(ellipse at 50% 50%,rgba(0,245,255,0.4),transparent 70%),
+    linear-gradient(180deg,#00E5EE 0%,#00CED1 40%,#008B8B 100%);
+  filter:
+    drop-shadow(0 0 6px rgba(0,245,255,0.7))
+    drop-shadow(0 0 15px rgba(0,245,255,0.4))
+    drop-shadow(0 0 30px rgba(0,245,255,0.2));
+}
+.bead.active::before{
+  background:linear-gradient(180deg,rgba(255,255,255,0.25) 0%,transparent 50%,rgba(0,80,80,0.3) 100%);
+}
+.bead.active::after{
+  background:rgba(0,245,255,0.15);
+}
+.bead.active:hover{
+  filter:
+    drop-shadow(0 0 8px rgba(0,245,255,0.9))
+    drop-shadow(0 0 20px rgba(0,245,255,0.5))
+    drop-shadow(0 0 40px rgba(0,245,255,0.25))
+    brightness(1.1);
+}
+
+/* ═══════════════════════════════════════════
+   COLUMN LABELS
+   ═══════════════════════════════════════════ */
+.col-labels{display:flex;justify-content:space-around;width:100%;margin-top:4px;flex-shrink:0}
+.col-label{
+  flex:1;text-align:center;
+  font-size:clamp(5px,1.5vw,7px);color:rgba(0,245,255,0.18);letter-spacing:1px;
+  font-weight:300;
+}
+
+/* ═══════════════════════════════════════════
+   PARTICLES
+   ═══════════════════════════════════════════ */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{
+  position:absolute;border-radius:50%;
+  background:rgba(0,245,255,0.12);
+  animation:float-up linear infinite;
+}
+@keyframes float-up{
+  0%{transform:translateY(100vh) scale(0);opacity:0}
+  10%{opacity:1}90%{opacity:0.6}
+  100%{transform:translateY(-10vh) scale(1);opacity:0}
+}
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div class="container" id="mainContainer">
+
+  <!-- LCD DISPLAY -->
+  <div class="lcd-panel">
+    <div class="lcd-label">Decimal Output</div>
+    <div class="lcd-value" id="display">0000000</div>
+  </div>
+
+  <!-- SOROBAN FRAME -->
+  <div class="soroban-frame" id="sorobanFrame">
+    <!-- Hex screws -->
+    <div class="hex-screw screw-tl"></div>
+    <div class="hex-screw screw-tr"></div>
+    <div class="hex-screw screw-bl"></div>
+    <div class="hex-screw screw-br"></div>
+
+    <button class="reset-btn" id="resetBtn" onclick="resetSoroban()">Reset</button>
+
+    <!-- Heaven rods -->
+    <div class="rods-area" id="heavenArea"></div>
+    <!-- Reckoning Bar -->
+    <div class="bar-wrapper"></div>
+    <!-- Earth rods -->
+    <div class="rods-area" id="earthArea"></div>
+
+    <div class="col-labels" id="colLabels"></div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   SOROBAN SIMULATOR — Fully Responsive Edition
+   Dynamically calculates all sizes based on available space
+   ============================================================ */
+const RODS = 7;
+const LABELS = ['10⁶','10⁵','10⁴','10³','10²','10¹','10⁰'];
+
+let state = Array.from({length:RODS}, ()=>({heaven:false, earth:0}));
+
+/* ─── Cached layout values ─── */
+let BEAD_W = 44;
+let BEAD_H = 22;
+let HEAVEN_H = 60;
+let EARTH_H = 140;
+let BEAD_GAP = 3;
+
+/* ─────────── DYNAMIC SIZING ─────────── */
+function computeLayout(){
+  const vh = window.innerHeight || document.documentElement.clientHeight;
+  const vw = window.innerWidth || document.documentElement.clientWidth;
+
+  // Available height for the soroban frame content
+  // Account for: container padding(12), lcd panel (~50-70), gap(4), frame padding(32), bar(6), labels(16)
+  const lcdH = document.querySelector('.lcd-panel')?.offsetHeight || 60;
+  const frameAvailable = vh - lcdH - 12 - 4 - 32 - 6 - 16 - 10; // remaining for heaven + earth
+
+  // Heaven gets ~22% of available, Earth gets ~78%
+  HEAVEN_H = Math.max(30, Math.floor(frameAvailable * 0.22));
+  EARTH_H = Math.max(60, Math.floor(frameAvailable * 0.78));
+
+  // Bead size based on available width per rod and section height
+  const rodW = (vw - 16) / RODS; // container padding + frame padding
+  BEAD_W = Math.max(18, Math.min(56, Math.floor(rodW * 0.85)));
+  BEAD_H = Math.max(10, Math.min(30, Math.floor(BEAD_W * 0.5)));
+
+  // Gap between earth beads — must fit 4 beads in EARTH_H
+  const maxBeadStack = 4 * BEAD_H + 3 * 20; // worst case
+  BEAD_GAP = Math.max(1, Math.min(5, Math.floor((EARTH_H - 4 * BEAD_H - 8) / 5)));
+
+  // Apply heights
+  document.querySelectorAll('.heaven').forEach(el => el.style.height = HEAVEN_H + 'px');
+  document.querySelectorAll('.earth').forEach(el => el.style.height = EARTH_H + 'px');
+
+  // Apply bead sizes
+  document.querySelectorAll('.bead').forEach(bd => {
+    bd.style.width = BEAD_W + 'px';
+    bd.style.height = BEAD_H + 'px';
+  });
+}
+
+/* ─────────── BUILD ─────────── */
+function build(){
+  const hArea = document.getElementById('heavenArea');
+  const eArea = document.getElementById('earthArea');
+  const cLbl  = document.getElementById('colLabels');
+  hArea.innerHTML=''; eArea.innerHTML=''; cLbl.innerHTML='';
+
+  for(let r=0;r<RODS;r++){
+    // Heaven column
+    const hRod=el('div','rod');
+    hRod.appendChild(el('div','rod-line'));
+    const hSec=el('div','heaven');
+    const hB=el('div','bead');
+    hB.dataset.rod=r;
+    interact(hB,()=>toggleHeaven(r));
+    hSec.appendChild(hB);
+    hRod.appendChild(hSec);
+    hArea.appendChild(hRod);
+
+    // Earth column
+    const eRod=el('div','rod');
+    eRod.appendChild(el('div','rod-line'));
+    const eSec=el('div','earth');
+    for(let b=0;b<4;b++){
+      const eB=el('div','bead');
+      eB.dataset.rod=r; eB.dataset.bead=b;
+      interact(eB,()=>toggleEarth(r,b));
+      eSec.appendChild(eB);
+    }
+    eRod.appendChild(eSec);
+    eArea.appendChild(eRod);
+
+    // Label
+    const lb=el('div','col-label');
+    lb.textContent=LABELS[r];
+    cLbl.appendChild(lb);
+  }
+
+  computeLayout();
+  positionAll();
+}
+
+function el(tag,cls){const e=document.createElement(tag);e.className=cls;return e}
+
+function interact(elem,fn){
+  elem.addEventListener('click',fn);
+  elem.addEventListener('touchstart',e=>{e.preventDefault();fn()},{passive:false});
+}
+
+/* ─────────── LOGIC ─────────── */
+function toggleHeaven(r){
+  state[r].heaven=!state[r].heaven;
+  positionAll(); updateDisplay();
+}
+
+function toggleEarth(r,b){
+  if(b<state[r].earth) state[r].earth=b;
+  else state[r].earth=b+1;
+  positionAll(); updateDisplay();
+}
+
+/* ─────────── POSITIONING ─────────── */
+function positionAll(){
+  const hArea=document.getElementById('heavenArea');
+  const eArea=document.getElementById('earthArea');
+
+  for(let r=0;r<RODS;r++){
+    // Heaven
+    const hSec=hArea.children[r].querySelector('.heaven');
+    const hB=hSec.querySelector('.bead');
+    const hH = HEAVEN_H;
+    const bH = BEAD_H;
+
+    if(state[r].heaven){
+      hB.style.top=(hH-bH-2)+'px';
+      hB.classList.add('active');
+    }else{
+      hB.style.top='4px';
+      hB.classList.remove('active');
+    }
+
+    // Earth
+    const eSec=eArea.children[r].querySelector('.earth');
+    const eBeads=eSec.querySelectorAll('.bead');
+    const eH = EARTH_H;
+    const ebH = BEAD_H;
+    const gap = BEAD_GAP;
+    const act=state[r].earth;
+
+    eBeads.forEach((bd,i)=>{
+      if(i<act){
+        // Active: stack from top (against bar)
+        bd.style.top=(2+i*(ebH+gap))+'px';
+        bd.classList.add('active');
+      }else{
+        // Inactive: stack from bottom
+        const inactiveCount=4-act;
+        const idx=i-act;
+        const totalInactiveH = inactiveCount * ebH + (inactiveCount - 1) * gap;
+        const startBottom = eH - totalInactiveH - 2;
+        bd.style.top=(startBottom+idx*(ebH+gap))+'px';
+        bd.classList.remove('active');
+      }
+    });
+  }
+}
+
+/* ─────────── DISPLAY ─────────── */
+function calculateValue(){
+  let t=0;
+  for(let r=0;r<RODS;r++){
+    t+=((state[r].heaven?5:0)+state[r].earth)*Math.pow(10,RODS-1-r);
+  }
+  return t;
+}
+
+function updateDisplay(){
+  const d=document.getElementById('display');
+  d.textContent=calculateValue().toString().padStart(7,'0');
+  d.classList.add('flash');
+  setTimeout(()=>d.classList.remove('flash'),180);
+}
+
+function resetSoroban(){
+  state=Array.from({length:RODS},()=>({heaven:false,earth:0}));
+  positionAll(); updateDisplay();
+}
+
+/* ─────────── PARTICLES ─────────── */
+function spawnParticles(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<12;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDuration=(10+Math.random()*16)+'s';
+    p.style.animationDelay=Math.random()*12+'s';
+    const s=1+Math.random()*1.5;
+    p.style.width=s+'px'; p.style.height=s+'px';
+    c.appendChild(p);
+  }
+}
+
+/* ─────────── INIT ─────────── */
+window.addEventListener('load',()=>{
+  build(); updateDisplay(); spawnParticles();
+  // Re-compute after fonts load
+  setTimeout(()=>{ computeLayout(); positionAll(); },200);
+});
+
+window.addEventListener('resize',()=>{
+  clearTimeout(window._rt);
+  window._rt=setTimeout(()=>{
+    computeLayout();
+    positionAll();
+  },80);
+});
+
+// Also handle orientation change for mobile
+window.addEventListener('orientationchange',()=>{
+  setTimeout(()=>{ computeLayout(); positionAll(); },300);
+});
+</script>
+</body>
+</html>
