@@ -4,9 +4,11 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import {
   Calculator,
-  BrainCircuit,
-  Globe2,
+  Brain,
   Cpu,
+  Cog,
+  Coins,
+  GraduationCap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -26,35 +28,51 @@ interface BentoCard {
 const CARDS: BentoCard[] = [
   {
     id: 1,
-    icon: Calculator,
-    tag: "Matemática",
-    title: "Sistema Decimal Posicional",
-    body: "Cada haste do ábaco representa uma potência de base 10 — unidades, dezenas, centenas. As contas inferiores valem 1 e as superiores valem 5. O valor de uma conta depende estritamente da haste em que ela está posicionada. Esse mecanismo materializa o sistema decimal posicional, a mesma fundação matemática que usamos hoje.",
+    icon: Cog,
+    tag: "Fundação",
+    title: "A Origem Mecânica",
+    body: "O ábaco, surgido na Mesopotâmia, é o primeiro instrumento de cálculo mecânico e ancestral direto dos computadores modernos. Facilitava operações rápidas, moldando o desenvolvimento inicial do pensamento lógico-matemático humano.",
     gridClass: "md:col-span-2 md:row-span-2",
   },
   {
     id: 2,
-    icon: BrainCircuit,
-    tag: "Cognição",
-    title: "Cálculo Mental e Tátil",
-    body: "Diferente de escrever em um papel, o ábaco exige manipulação física. O operador visualiza e toca os números, desenvolvendo uma memória muscular que permite realizar cálculos mentais complexos incrivelmente rápidos (o método conhecido como Anzan).",
+    icon: Calculator,
+    tag: "Matemática",
+    title: "Sistema Decimal Posicional",
+    body: "Cada haste representa uma potência de base 10 (unidades, dezenas...). O valor da conta depende de sua posição. É a materialização física da mesma fundação matemática que usamos hoje.",
     gridClass: "md:col-span-1 md:row-span-1",
   },
   {
     id: 3,
-    icon: Globe2,
-    tag: "História",
-    title: "Adaptações Culturais",
-    body: "O design original evoluiu para o Suanpan chinês e depois para o Soroban japonês, que eliminou contas redundantes para focar na velocidade extrema. Os russos criaram o Schoty, adaptado para o comércio de rublos locais.",
+    icon: Coins,
+    tag: "Economia",
+    title: "O Motor do Comércio Antigo",
+    body: "Antes das calculadoras, foi a ferramenta vital para o comércio. Transformou o caos das transações primitivas em um sistema organizado, permitindo o controle rápido de mercadorias e impostos.",
     gridClass: "md:col-span-1 md:row-span-1",
   },
   {
     id: 4,
+    icon: Brain,
+    tag: "Cognição",
+    title: "Cálculo Mental (Anzan)",
+    body: "A manipulação física exige o uso conjunto da visão e do tato. O operador desenvolve uma memória muscular profunda, permitindo realizar cálculos mentais incrivelmente rápidos, superando até calculadoras eletrônicas.",
+    gridClass: "md:col-span-1 md:row-span-1",
+  },
+  {
+    id: 5,
+    icon: GraduationCap,
+    tag: "Legado",
+    title: "Sobrevivência na Sociedade Atual",
+    body: "Com a era digital, perdeu seu uso comercial, mas encontrou um novo propósito insubstituível. Hoje funciona como uma poderosa ferramenta educacional e pedagógica para o desenvolvimento cognitivo.",
+    gridClass: "md:col-span-1 md:row-span-1",
+  },
+  {
+    id: 6,
     icon: Cpu,
     tag: "Engenharia",
     title: "O Princípio da Computação Discreta",
-    body: "A ideia de representar estados numéricos através de posições físicas discretas é o exato mesmo princípio das memórias de computadores modernos. Enquanto o ábaco usa contas deslizando em hastes para representar dados na base 10 (ou mista), um registrador de CPU utiliza transistores para representar dados na base 2. Ambos são máquinas de estado discretas construídas para processamento lógico.",
-    gridClass: "md:col-span-3 md:row-span-1",
+    body: "A ideia de representar estados numéricos através de posições físicas discretas é o exato princípio das memórias modernas. O ábaco usa contas deslizantes; a CPU usa transistores. Ambas são máquinas de estados construídas para processamento lógico.",
+    gridClass: "md:col-span-4 md:row-span-1",
   },
 ];
 
@@ -189,7 +207,7 @@ export default function BentoGrid() {
         </motion.div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 sm:gap-4">
           {CARDS.map((card, i) => (
             <BentoCardItem key={card.id} card={card} index={i} />
           ))}
