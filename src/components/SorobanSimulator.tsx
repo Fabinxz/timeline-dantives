@@ -202,14 +202,14 @@ export default function SorobanSimulator() {
         </div>
 
         {/* RECKONING FRAME */}
-        <div className="relative flex-1 w-full bg-[#090809] border border-white/5 rounded mt-2 pb-2 px-1 flex flex-col justify-end">
-          <button onClick={resetSoroban} className="absolute top-2 right-2 z-10 bg-black/50 hover:bg-[#222] border border-white/10 text-[8px] uppercase tracking-widest px-2 py-1 rounded text-white/30 hover:text-[#00F5FF] transition-all">
+        <div className="relative flex-1 w-full bg-[#090809] border border-white/5 rounded mt-2 px-1">
+          <button onClick={resetSoroban} className="absolute top-2 right-2 z-20 bg-black/50 hover:bg-[#222] border border-white/10 text-[8px] uppercase tracking-widest px-2 py-1 rounded text-white/30 hover:text-[#00F5FF] transition-all">
             <RotateCcw className="w-3 h-3 inline mr-1" />
             Reset
           </button>
 
           {/* Rods Area */}
-          <div className="flex justify-around w-full relative z-0 h-full mt-8">
+          <div className="absolute inset-0 top-8 bottom-8 flex justify-around w-full z-0 px-1">
             {/* Reckoning Bar Line */}
             <div className="absolute left-0 right-0 h-1 sm:h-1.5 z-20 bg-gradient-to-b from-[#333] via-[#222] to-[#1a1a1a] border-t border-white/10 border-b border-black/50 shadow-[0_0_15px_rgba(0,245,255,0.08)]" style={{ top: layout.heavenH + 'px' }} />
 
