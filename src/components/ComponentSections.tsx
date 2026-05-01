@@ -105,3 +105,19 @@ export function SimulatorSection({ children }: { children?: React.ReactNode }) {
     </ComponentSection>
   );
 }
+
+export function VideoSection({ children }: { children?: React.ReactNode }) {
+  return (
+    /* <!-- VIDEO_EXHIBITION --> */
+    <ComponentSection
+      id="videos"
+      label="Exposição Multimídia"
+      title="Documentários e Tutoriais"
+      description="Explore a profundidade histórica e técnica do ábaco através de produções audiovisuais exclusivas."
+      icon={<motion.div animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }}><Calculator className="w-4 h-4 text-[#00F5FF]/40" strokeWidth={1.5} /></motion.div>}
+      comment="VIDEO_EXHIBITION"
+    >
+      {children}
+    </ComponentSection>
+  );
+}

@@ -1,8 +1,9 @@
 import Hero from "@/components/Hero";
 import BentoGrid from "@/components/BentoGrid";
-import { TimelineSection, SimulatorSection } from "@/components/ComponentSections";
+import { TimelineSection, SimulatorSection, VideoSection } from "@/components/ComponentSections";
 import Timeline from "@/components/Timeline";
 import SorobanSimulator from "@/components/SorobanSimulator";
+import VideoExhibition from "@/components/VideoExhibition";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -20,6 +21,11 @@ export default function Home() {
       <SimulatorSection>
         <SorobanSimulator />
       </SimulatorSection>
+
+      {/* VIDEO_EXHIBITION */}
+      <VideoSection>
+        <VideoExhibition />
+      </VideoSection>
 
       {/* BENTO GRID */}
       <BentoGrid />
