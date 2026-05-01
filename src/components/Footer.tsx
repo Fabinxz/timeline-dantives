@@ -72,12 +72,6 @@ export default function Footer() {
           <p className="text-[10px] tracking-[1px] text-[#00F5FF]/30 uppercase">
             {year}
           </p>
-          <span
-            className="text-[10px] px-2 py-1 rounded bg-white/5 border border-white/5"
-            style={{ color: "rgba(255,255,255,0.3)" }}
-          >
-            v2.0
-          </span>
         </div>
       </div>
     </footer>

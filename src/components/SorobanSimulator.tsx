@@ -8,11 +8,11 @@ import { Ghost, Hand, Calculator } from "lucide-react";
    CONSTANTS & CONFIG
    ═══════════════════════════════════════════════════ */
 const NUM_RODS = 13;
-const BEAD_W = 46;
-const BEAD_H = 18;
-const BEAD_GAP = 3;
-const HEAVEN_H = 60;
-const EARTH_H = 120;
+const BEAD_W = 56;
+const BEAD_H = 24;
+const BEAD_GAP = 4;
+const HEAVEN_H = 80;
+const EARTH_H = 160;
 
 const LABELS = [
   "T", "B", "M", "c", "d", "u",
@@ -96,8 +96,28 @@ export default function SorobanSimulator() {
     Array.from({ length: NUM_RODS }).map(() => ({ heaven: 0, earth: 0 }))
   );
 
-  // Derive ghost rods from input
-  const strVal = inputValue.replace(/[^0-9]/g, "").slice(0, NUM_RODS);
+  // Derive ghost rods from input (with real-time math evaluation)
+  let calculatedStr = "0";
+  if (inputValue.trim()) {
+    try {
+      // Allow only numbers and basic math operators
+      const sanitized = inputValue.replace(/[^0-9+\-*/().]/g, "");
+      if (sanitized) {
+        // eslint-disable-next-line no-new-func
+        const result = new Function("return " + sanitized)();
+        if (Number.isFinite(result)) {
+          calculatedStr = Math.floor(Math.abs(result)).toString();
+        } else {
+          calculatedStr = inputValue.replace(/[^0-9]/g, "");
+        }
+      }
+    } catch (e) {
+      // If incomplete expression (like "2+"), fallback to just digits typed
+      calculatedStr = inputValue.replace(/[^0-9]/g, "");
+    }
+  }
+
+  const strVal = calculatedStr.slice(0, NUM_RODS);
   const ghostRods = Array.from({ length: NUM_RODS }).map((_, i) => {
     const strIndex = i - (NUM_RODS - strVal.length);
     if (strIndex >= 0 && strIndex < strVal.length) {
@@ -260,8 +280,8 @@ export default function SorobanSimulator() {
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Digite um número..."
-                maxLength={13}
+                placeholder="Ex: 10 + 15 * 2"
+                maxLength={30}
                 className="flex-1 bg-transparent border-none text-white text-xl md:text-2xl font-bold placeholder:text-white/20 focus:outline-none focus:ring-0 py-3"
                 style={{ fontFamily: "var(--font-mono)", letterSpacing: "2px" }}
               />
