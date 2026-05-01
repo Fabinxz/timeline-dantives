@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Ghost, Hand, Calculator } from "lucide-react";
 
@@ -92,6 +92,25 @@ function Bead({ active, isHeaven, index = 0, activeCount = 0, onClick, disabled 
 export default function SorobanSimulator() {
   const [isGhostMode, setIsGhostMode] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [scale, setScale] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Responsive scale hook to fit the massive soroban perfectly into ANY viewport
+  useEffect(() => {
+    const updateScale = () => {
+      if (containerRef.current) {
+        const availableWidth = containerRef.current.clientWidth;
+        // The intrinsic width of the Soroban board is around 1100px with its padding/borders
+        const targetWidth = 1100;
+        const newScale = Math.min(1, availableWidth / targetWidth);
+        setScale(newScale);
+      }
+    };
+    updateScale();
+    window.addEventListener("resize", updateScale);
+    return () => window.removeEventListener("resize", updateScale);
+  }, []);
+
   const [manualRods, setManualRods] = useState(
     Array.from({ length: NUM_RODS }).map(() => ({ heaven: 0, earth: 0 }))
   );
@@ -211,8 +230,17 @@ export default function SorobanSimulator() {
       </div>
 
       {/* ── SOROBAN BOARD ── */}
-      <div className="w-full max-w-[1400px] overflow-x-auto pb-6 scrollbar-hide flex justify-center">
-        <div className="min-w-max p-4 md:p-8 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-xl border-4 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
+      <div className="w-full pb-6 flex justify-center" ref={containerRef}>
+        {/* Responsive Scaler Wrapper */}
+        <div 
+          className="relative w-[1100px] flex justify-center transition-all duration-300"
+          style={{ height: `${360 * scale}px` }}
+        >
+          <div 
+            className="absolute top-0 origin-top flex justify-center"
+            style={{ transform: `scale(${scale})` }}
+          >
+            <div className="min-w-max p-4 md:p-8 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-xl border-4 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
           
           {/* Wood Frame Texture */}
           <div className="absolute inset-0 rounded-lg opacity-20 pointer-events-none"
@@ -258,6 +286,8 @@ export default function SorobanSimulator() {
                 <div className="absolute -bottom-7 text-[12px] text-white/30 tracking-widest">{LABELS[r]}</div>
               </div>
             ))}
+          </div>
+        </div>
           </div>
         </div>
       </div>
