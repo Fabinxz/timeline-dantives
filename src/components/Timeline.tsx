@@ -116,7 +116,7 @@ const cardSpring = {
 interface CardProps {
   event: TimelineEvent;
   index: number;
-  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onClick: () => void;
 }
 
 function TimelineCard({ event, index, onClick }: CardProps) {
@@ -159,7 +159,7 @@ function TimelineCard({ event, index, onClick }: CardProps) {
 
       {/* ── CARD ── */}
       <motion.div
-        layout
+        layoutId={`card-${event.id}`}
         initial={{ opacity: 0, y: 40, scale: 0.97 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: false, amount: 0.15 }}
@@ -169,7 +169,6 @@ function TimelineCard({ event, index, onClick }: CardProps) {
           w-[calc(100%-2.5rem)] ml-[2.5rem]
           md:w-[calc(50%-40px)] md:ml-0
           ${isLeft ? "md:mr-auto" : "md:ml-auto"}
-          z-10
         `}
       >
         <div
@@ -323,17 +322,6 @@ function TimelineCard({ event, index, onClick }: CardProps) {
 export default function Timeline() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [modalTop, setModalTop] = useState<number>(0);
-
-  const handleCardClick = (id: number, e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    // Calcula o topo absoluto baseado na rolagem da janela pai + a posição atual do card
-    const absoluteTop = window.scrollY + rect.top;
-    
-    // Centraliza levemente acima do card para dar o aspecto 'grandão no meio'
-    setModalTop(Math.max(0, absoluteTop - 50));
-    setSelectedId(id);
-  };
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -383,12 +371,7 @@ export default function Timeline() {
         {/* ════════ EVENTS ════════ */}
         <div className="relative flex flex-col gap-8 sm:gap-14 md:gap-20">
           {TIMELINE_DATA.map((event, index) => (
-            <TimelineCard 
-              key={event.id} 
-              event={event} 
-              index={index} 
-              onClick={(e) => handleCardClick(event.id, e)} 
-            />
+            <TimelineCard key={event.id} event={event} index={index} onClick={() => setSelectedId(event.id)} />
           ))}
         </div>
       </div>
@@ -403,28 +386,25 @@ export default function Timeline() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedId(null)}
-              className="absolute inset-0 z-40 bg-black/80 backdrop-blur-sm h-full w-full"
+              className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm"
             />
             
-            {/* Modal Content - Posicionado Absolutamente para ignorar o overflow height do iframe */}
-            <div 
-              className="absolute left-0 right-0 z-50 flex justify-center p-4 pointer-events-none"
-              style={{ top: modalTop }}
-            >
+            {/* Modal Content */}
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
               {TIMELINE_DATA.filter((e) => e.id === selectedId).map((event) => (
                 <motion.div
                   key={event.id}
                   layoutId={`card-${event.id}`}
-                  className="relative w-full max-w-2xl bg-[#090909] rounded-xl overflow-hidden border border-[#00F5FF]/30 shadow-[0_0_80px_rgba(0,245,255,0.15)] pointer-events-auto flex flex-col max-h-[90vh]"
+                  className="relative w-full max-w-2xl bg-[#090909] rounded-xl overflow-hidden border border-[#00F5FF]/30 shadow-[0_0_50px_rgba(0,245,255,0.1)] pointer-events-auto flex flex-col max-h-[90vh]"
                 >
                   <button
                     onClick={() => setSelectedId(null)}
-                    className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/50 hover:bg-[#00F5FF]/20 border border-white/10 hover:border-[#00F5FF]/50 text-white/70 hover:text-[#00F5FF] transition-all duration-300 backdrop-blur-md"
+                    className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/50 hover:bg-[#00F5FF]/20 border border-white/10 hover:border-[#00F5FF]/50 text-white/70 hover:text-[#00F5FF] transition-all duration-300"
                   >
-                    <X className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <X className="w-5 h-5" />
                   </button>
 
-                  <motion.div layoutId={`image-${event.id}`} className="relative w-full h-56 sm:h-72 shrink-0">
+                  <motion.div layoutId={`image-${event.id}`} className="relative w-full h-48 sm:h-64 shrink-0">
                     <img
                       src={event.image}
                       alt={event.title}
@@ -432,20 +412,20 @@ export default function Timeline() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
                     <div className="absolute bottom-4 left-6" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                      <motion.span layoutId={`year-${event.id}`} className="text-3xl sm:text-4xl font-bold text-[#00F5FF] drop-shadow-[0_0_20px_rgba(0,245,255,0.6)]">
+                      <motion.span layoutId={`year-${event.id}`} className="text-2xl sm:text-3xl font-bold text-[#00F5FF] drop-shadow-[0_0_15px_rgba(0,245,255,0.5)]">
                         {event.year}
                       </motion.span>
-                      <motion.span layoutId={`era-${event.id}`} className="ml-3 text-sm sm:text-base text-gray-400 tracking-widest uppercase font-semibold">
+                      <motion.span layoutId={`era-${event.id}`} className="ml-3 text-xs text-gray-400 tracking-widest uppercase">
                         {event.era}
                       </motion.span>
                     </div>
                   </motion.div>
 
-                  <div className="p-6 sm:p-10 overflow-y-auto">
-                    <motion.h3 layoutId={`title-${event.id}`} className="text-3xl sm:text-4xl font-bold text-white/95 mb-4 tracking-tight">
+                  <div className="p-6 sm:p-8 overflow-y-auto">
+                    <motion.h3 layoutId={`title-${event.id}`} className="text-2xl sm:text-3xl font-bold text-white/90 mb-4">
                       {event.title}
                     </motion.h3>
-                    <motion.p layoutId={`desc-${event.id}`} className="text-base sm:text-lg text-[#00F5FF]/80 mb-8 font-medium">
+                    <motion.p layoutId={`desc-${event.id}`} className="text-sm sm:text-base text-[#00F5FF]/70 mb-6 font-medium">
                       {event.description}
                     </motion.p>
                     
@@ -453,7 +433,7 @@ export default function Timeline() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
-                      className="text-gray-300 leading-relaxed text-sm sm:text-base space-y-6 border-t border-white/10 pt-8"
+                      className="text-gray-300 leading-relaxed text-sm sm:text-base space-y-4 border-t border-white/10 pt-6"
                     >
                       <p>{event.detailedContent}</p>
                     </motion.div>
