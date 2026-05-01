@@ -111,9 +111,9 @@ export function VideoSection({ children }: { children?: React.ReactNode }) {
     /* <!-- VIDEO_EXHIBITION --> */
     <ComponentSection
       id="videos"
-      label="Exposição Multimídia"
-      title="Documentários e Tutoriais"
-      description="Explore a profundidade histórica e técnica do ábaco através de produções audiovisuais exclusivas."
+      label="Acervo Audiovisual"
+      title="Perspectivas e Práticas"
+      description="Uma imersão na herança técnica do Soroban, explorando desde a mecânica de operação até sua influência na arquitetura da computação moderna."
       icon={<motion.div animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }}><Calculator className="w-4 h-4 text-[#00F5FF]/40" strokeWidth={1.5} /></motion.div>}
       comment="VIDEO_EXHIBITION"
     >

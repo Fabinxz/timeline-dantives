@@ -98,17 +98,17 @@ function VideoCard({ title, subtitle, description, thumbnail, icon, duration }: 
 export default function VideoExhibition() {
   const videos = [
     {
-      title: "Dominando o Soroban",
-      subtitle: "Tutorial Técnico",
-      description: "Um guia passo a passo para iniciantes. Aprenda as técnicas fundamentais de soma e subtração no ábaco japonês com demonstrações visuais claras.",
+      title: "Manual de Operação: Soroban",
+      subtitle: "Técnicas de Cálculo",
+      description: "Dominar o ábaco exige ritmo e precisão. Neste guia, demonstramos a manipulação correta das contas celestiais e terrestres, focando na aplicação prática das regras de complementos para otimizar a velocidade de processamento mental.",
       thumbnail: "/video_tutorial_thumb_1777654260013.png",
       icon: <GraduationCap className="w-5 h-5" />,
       duration: "08:45"
     },
     {
-      title: "Do Ábaco ao Silício",
-      subtitle: "Documentário Histórico",
-      description: "Explore como os princípios binários e decimais do ábaco influenciaram a arquitetura dos primeiros computadores modernos e a lógica da computação.",
+      title: "O Ábaco e a Gênese do Computador",
+      subtitle: "Evolução Histórica",
+      description: "Muito antes dos transistores, a humanidade já utilizava sistemas posicionais para processar dados. Exploramos a conexão direta entre a engenharia do Soroban e o desenvolvimento das primeiras unidades lógicas e aritméticas, revelando uma linhagem tecnológica contínua.",
       thumbnail: "/video_history_thumb_1777654277759.png",
       icon: <BookOpen className="w-5 h-5" />,
       duration: "12:20"
