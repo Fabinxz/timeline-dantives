@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Ghost, Hand, Calculator } from "lucide-react";
+import { Ghost, Hand, Calculator, RotateCcw } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════
    CONSTANTS & CONFIG
@@ -166,20 +166,41 @@ export default function SorobanSimulator() {
               const power = digits.length - 1 - j;
               const placeValue = digitVal * Math.pow(10, power);
               
-              const placeName = power === 0 ? "unidade(s)" : power === 1 ? "dezena(s)" : power === 2 ? "centena(s)" : power === 3 ? "milhar(es)" : "ordem(ns)";
-              
-              currentValue = op === "+" ? currentValue + placeValue : currentValue - placeValue;
+              const placeName = power === 0 ? "Unidades" : power === 1 ? "Dezenas" : power === 2 ? "Centenas" : "Milhares";
+              const v = Math.floor(currentValue / Math.pow(10, power)) % 10;
+              const d = digitVal;
+              let explanation = "";
+
+              if (op === "+") {
+                if (v + d >= 10) {
+                  explanation = `Regra do 10 (+${d}): Adicionamos 1 na haste à esquerda e retiramos ${10 - d} na atual.`;
+                } else if (v < 5 && v + d >= 5) {
+                  explanation = `Regra do 5 (+${d}): Abaixamos a celestial (+5) e retiramos ${5 - d} inferior(es).`;
+                } else {
+                  explanation = `Soma Direta (+${d}): Subimos conta(s) na haste.`;
+                }
+                currentValue += placeValue;
+              } else {
+                if (v - d < 0) {
+                  explanation = `Regra do 10 (-${d}): Retiramos 1 da haste à esquerda e devolvemos ${10 - d} na atual.`;
+                } else if (v >= 5 && v - d < 5) {
+                  explanation = `Regra do 5 (-${d}): Subimos a celestial (-5) e devolvemos ${5 - d} inferior(es).`;
+                } else {
+                  explanation = `Subtração Direta (-${d}): Abaixamos conta(s) na haste.`;
+                }
+                currentValue -= placeValue;
+              }
               
               setDisplayedGhostValue(Math.max(0, currentValue).toString());
-              setTutorMessage(`> Passo ${i + 1 + j}: ${op === "+" ? "Adicionando" : "Subtraindo"} ${digitVal} ${placeName}...`);
-              await pause(800);
+              setTutorMessage(`> [${placeName}] ${explanation}`);
+              await pause(1500);
               if (sequenceRef.current !== currentSeq) return;
             }
           } else {
             currentValue = op === "*" ? currentValue * numVal : Math.floor(currentValue / numVal);
             setDisplayedGhostValue(Math.max(0, currentValue).toString());
-            setTutorMessage(`> Passo ${i + 1}: ${op === "*" ? "Multiplicando por" : "Dividindo por"} ${numVal}...`);
-            await pause(800);
+            setTutorMessage(`> Operação Complexa: ${op === "*" ? "Multiplicando por" : "Dividindo por"} ${numVal}...`);
+            await pause(1200);
             if (sequenceRef.current !== currentSeq) return;
           }
         }
@@ -198,6 +219,17 @@ export default function SorobanSimulator() {
   const [manualRods, setManualRods] = useState(
     Array.from({ length: NUM_RODS }).map(() => ({ heaven: 0, earth: 0 }))
   );
+
+  const handleReset = () => {
+    if (isGhostMode) {
+      setInputValue("");
+      setDisplayedGhostValue("0");
+      setTutorMessage("> Aguardando equação...");
+      sequenceRef.current++; // Aborts any ongoing async sequence
+    } else {
+      setManualRods(Array.from({ length: NUM_RODS }).map(() => ({ heaven: 0, earth: 0 })));
+    }
+  };
 
   // Derive ghost rods from displayed ghost value (async controlled)
   const strVal = displayedGhostValue.slice(0, NUM_RODS);
@@ -271,6 +303,16 @@ export default function SorobanSimulator() {
           >
             <Ghost className="w-3.5 h-3.5" />
             Fantasma
+          </button>
+          
+          {/* Reset Button */}
+          <div className="w-px h-6 bg-white/10 mx-1 hidden sm:block" />
+          <button 
+            onClick={handleReset}
+            className="flex items-center justify-center p-2 rounded-md text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
+            title="Zerar Ábaco"
+          >
+            <RotateCcw className="w-4 h-4 sm:w-4 sm:h-4" />
           </button>
         </div>
 
