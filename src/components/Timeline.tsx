@@ -9,7 +9,7 @@ import {
   useInView,
   AnimatePresence,
 } from "framer-motion";
-import { X } from "lucide-react";
+import { X, Maximize2 } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════
    DATA INTERFACE & CONTENT
@@ -116,11 +116,10 @@ const cardSpring = {
 interface CardProps {
   event: TimelineEvent;
   index: number;
-  onClick: () => void;
-  isSelected: boolean;
+  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-function TimelineCard({ event, index, onClick, isSelected }: CardProps) {
+function TimelineCard({ event, index, onClick }: CardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: false, amount: 0.25 });
   const isLeft = index % 2 === 0;
@@ -170,16 +169,16 @@ function TimelineCard({ event, index, onClick, isSelected }: CardProps) {
           w-[calc(100%-2.5rem)] ml-[2.5rem]
           md:w-[calc(50%-40px)] md:ml-0
           ${isLeft ? "md:mr-auto" : "md:ml-auto"}
-          ${isSelected ? "z-30 shadow-[0_0_50px_rgba(0,245,255,0.1)] md:scale-105" : "z-10"}
+          z-10
         `}
       >
         <div
           onClick={onClick}
           className={`
-            relative rounded-lg overflow-hidden
+            group relative rounded-lg overflow-hidden
             backdrop-blur-md cursor-pointer
             border transition-all duration-700
-            ${isInView || isSelected ? "border-[#00F5FF]/30" : "border-gray-800"}
+            ${isInView ? "border-[#00F5FF]/30" : "border-gray-800"}
             hover:border-[#00F5FF]/60 hover:shadow-[0_0_30px_rgba(0,245,255,0.15)]
           `}
           style={{
@@ -192,22 +191,15 @@ function TimelineCard({ event, index, onClick, isSelected }: CardProps) {
           }}
         >
           {/* ── IMAGE CONTAINER ── */}
-          <motion.div layout className={`relative w-full overflow-hidden transition-all duration-500 ${isSelected ? "aspect-video md:h-64" : "aspect-[16/10]"}`}>
+          <motion.div layoutId={`image-${event.id}`} className="relative w-full aspect-[16/10] overflow-hidden">
             
-            {/* CLOSE BUTTON */}
-            <AnimatePresence>
-              {isSelected && (
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  onClick={(e) => { e.stopPropagation(); onClick(); }}
-                  className="absolute top-3 right-3 z-30 p-1.5 rounded-full bg-black/60 hover:bg-[#00F5FF]/20 border border-white/20 hover:border-[#00F5FF]/50 text-white/80 hover:text-[#00F5FF] transition-all backdrop-blur-md"
-                >
-                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
-                </motion.button>
-              )}
-            </AnimatePresence>
+            {/* HOVER EXPAND HINT */}
+            <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/20 text-[#00F5FF]">
+                <Maximize2 className="w-3.5 h-3.5" />
+                <span className="text-[10px] tracking-widest uppercase font-semibold">Expandir</span>
+              </div>
+            </div>
 
             <img
               src={event.image}
@@ -228,7 +220,7 @@ function TimelineCard({ event, index, onClick, isSelected }: CardProps) {
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >
               <motion.span
-                layout
+                layoutId={`year-${event.id}`}
                 className={`
                   text-lg sm:text-xl md:text-2xl font-bold tracking-wide
                   transition-all duration-500
@@ -242,7 +234,7 @@ function TimelineCard({ event, index, onClick, isSelected }: CardProps) {
               >
                 {event.year}
               </motion.span>
-              <motion.span layout className="ml-2 sm:ml-3 text-[8px] sm:text-[10px] text-gray-400 tracking-widest uppercase">
+              <motion.span layoutId={`era-${event.id}`} className="ml-2 sm:ml-3 text-[8px] sm:text-[10px] text-gray-400 tracking-widest uppercase">
                 {event.era}
               </motion.span>
             </div>
@@ -293,39 +285,21 @@ function TimelineCard({ event, index, onClick, isSelected }: CardProps) {
             )}
 
             {/* TITLE */}
-            <motion.h4 layout className={`font-semibold text-white/90 mb-1 sm:mb-2 tracking-tight ${isSelected ? "text-xl sm:text-2xl" : "text-sm sm:text-base md:text-lg"}`}>
+            <motion.h4 layoutId={`title-${event.id}`} className="text-sm sm:text-base md:text-lg font-semibold text-white/90 mb-1 sm:mb-2 tracking-tight">
               {event.title}
             </motion.h4>
 
             {/* DESCRIPTION */}
             <motion.p
-              layout
-              className={`leading-relaxed ${isSelected ? "text-sm sm:text-base text-[#00F5FF]/80" : "text-xs sm:text-sm"}`}
+              layoutId={`desc-${event.id}`}
+              className="text-xs sm:text-sm leading-relaxed"
               style={{
                 fontFamily: "'Inter', sans-serif",
-                color: isSelected ? undefined : "rgba(224, 224, 224, 0.8)",
+                color: "rgba(224, 224, 224, 0.8)",
               }}
             >
               {event.description}
             </motion.p>
-            
-            {/* DETAILED CONTENT (EXPANDED) */}
-            <AnimatePresence>
-              {isSelected && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                  animate={{ opacity: 1, height: "auto", marginTop: 24 }}
-                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                  className="overflow-hidden"
-                >
-                  <div className="pt-4 border-t border-white/10">
-                    <p className="text-sm sm:text-base leading-relaxed text-gray-300 font-sans">
-                      {event.detailedContent}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
 
           {/* SUBTLE BOTTOM ACCENT */}
@@ -349,6 +323,17 @@ function TimelineCard({ event, index, onClick, isSelected }: CardProps) {
 export default function Timeline() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [modalTop, setModalTop] = useState<number>(0);
+
+  const handleCardClick = (id: number, e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    // Calcula o topo absoluto baseado na rolagem da janela pai + a posição atual do card
+    const absoluteTop = window.scrollY + rect.top;
+    
+    // Centraliza levemente acima do card para dar o aspecto 'grandão no meio'
+    setModalTop(Math.max(0, absoluteTop - 50));
+    setSelectedId(id);
+  };
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -402,12 +387,83 @@ export default function Timeline() {
               key={event.id} 
               event={event} 
               index={index} 
-              isSelected={selectedId === event.id}
-              onClick={() => setSelectedId(selectedId === event.id ? null : event.id)} 
+              onClick={(e) => handleCardClick(event.id, e)} 
             />
           ))}
         </div>
       </div>
+
+      {/* ════════ EXPANDED MODAL ════════ */}
+      <AnimatePresence>
+        {selectedId && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedId(null)}
+              className="absolute inset-0 z-40 bg-black/80 backdrop-blur-sm h-full w-full"
+            />
+            
+            {/* Modal Content - Posicionado Absolutamente para ignorar o overflow height do iframe */}
+            <div 
+              className="absolute left-0 right-0 z-50 flex justify-center p-4 pointer-events-none"
+              style={{ top: modalTop }}
+            >
+              {TIMELINE_DATA.filter((e) => e.id === selectedId).map((event) => (
+                <motion.div
+                  key={event.id}
+                  layoutId={`card-${event.id}`}
+                  className="relative w-full max-w-2xl bg-[#090909] rounded-xl overflow-hidden border border-[#00F5FF]/30 shadow-[0_0_80px_rgba(0,245,255,0.15)] pointer-events-auto flex flex-col max-h-[90vh]"
+                >
+                  <button
+                    onClick={() => setSelectedId(null)}
+                    className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/50 hover:bg-[#00F5FF]/20 border border-white/10 hover:border-[#00F5FF]/50 text-white/70 hover:text-[#00F5FF] transition-all duration-300 backdrop-blur-md"
+                  >
+                    <X className="w-5 h-5 sm:w-6 sm:h-6" />
+                  </button>
+
+                  <motion.div layoutId={`image-${event.id}`} className="relative w-full h-56 sm:h-72 shrink-0">
+                    <img
+                      src={event.image}
+                      alt={event.title}
+                      className="object-cover w-full h-full"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-6" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                      <motion.span layoutId={`year-${event.id}`} className="text-3xl sm:text-4xl font-bold text-[#00F5FF] drop-shadow-[0_0_20px_rgba(0,245,255,0.6)]">
+                        {event.year}
+                      </motion.span>
+                      <motion.span layoutId={`era-${event.id}`} className="ml-3 text-sm sm:text-base text-gray-400 tracking-widest uppercase font-semibold">
+                        {event.era}
+                      </motion.span>
+                    </div>
+                  </motion.div>
+
+                  <div className="p-6 sm:p-10 overflow-y-auto">
+                    <motion.h3 layoutId={`title-${event.id}`} className="text-3xl sm:text-4xl font-bold text-white/95 mb-4 tracking-tight">
+                      {event.title}
+                    </motion.h3>
+                    <motion.p layoutId={`desc-${event.id}`} className="text-base sm:text-lg text-[#00F5FF]/80 mb-8 font-medium">
+                      {event.description}
+                    </motion.p>
+                    
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="text-gray-300 leading-relaxed text-sm sm:text-base space-y-6 border-t border-white/10 pt-8"
+                    >
+                      <p>{event.detailedContent}</p>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
