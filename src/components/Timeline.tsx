@@ -1,13 +1,15 @@
 "use client";
 
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import {
   motion,
   useScroll,
   useTransform,
   useSpring,
   useInView,
+  AnimatePresence,
 } from "framer-motion";
+import { X } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════
    DATA INTERFACE & CONTENT
@@ -18,6 +20,7 @@ interface TimelineEvent {
   era: string;
   title: string;
   description: string;
+  detailedContent: string;
   tag?: string;
   image: string;
 }
@@ -30,6 +33,8 @@ const TIMELINE_DATA: TimelineEvent[] = [
     title: "Ábaco Mesopotâmico",
     description:
       "Considerado a primeira 'máquina de calcular' da história. Desenvolvido para auxiliar em transações comerciais com pedras movidas sobre sulcos na areia.",
+    detailedContent:
+      "O ábaco mesopotâmico não possuía hastes ou contas furadas. Tratava-se de uma tábua coberta com areia fina ou pó (do grego 'abax', que significa superfície plana), onde eram desenhadas linhas. Pedrinhas (cálculos, origem da palavra 'calcular') eram movidas sobre essas linhas para representar diferentes potências de 10 ou 60, visto que utilizavam um sistema sexagesimal. Foi um salto cognitivo fundamental: externalizar a memória matemática para um meio físico.",
     tag: "Origem",
     image: "/assets/mesopotamico.png",
   },
@@ -40,6 +45,8 @@ const TIMELINE_DATA: TimelineEvent[] = [
     title: "Ábaco Grego",
     description:
       "A Tábua de Salamis. O ábaco mais antigo já encontrado fisicamente, comprovando o uso de sistemas de numeração em mármore na antiguidade.",
+    detailedContent:
+      "Descoberta na ilha de Salamina, esta enorme placa de mármore branco possui linhas gravadas e símbolos gregos representando valores monetários (talentos, dracmas, óbolos). Os operadores usavam contadores físicos posicionados nas linhas. O interessante da Tábua de Salamis é que ela prova matematicamente que os gregos usavam conceitos de valor posicional muito antes da adoção do zero arábico.",
     tag: "Arqueologia",
     image: "/assets/grego.png",
   },
@@ -50,6 +57,8 @@ const TIMELINE_DATA: TimelineEvent[] = [
     title: "Ábaco Romano",
     description:
       "O primeiro dispositivo portátil de cálculo. Feito de bronze com pinos que deslizavam em fendas, essencial para cobradores de impostos.",
+    detailedContent:
+      "Uma verdadeira maravilha da micro-engenharia antiga. O ábaco manual romano era uma placa de bronze contendo fendas verticais onde pequenos botões esféricos podiam deslizar. Ele já utilizava o sistema bi-quinário (semelhante ao ábaco moderno), com uma fenda inferior contendo 4 pinos (valendo 1 cada) e uma fenda superior contendo 1 pino (valendo 5). Isso permitia aos engenheiros e comerciantes romanos realizar cálculos rápidos em qualquer lugar do Império.",
     tag: "Portabilidade",
     image: "/assets/romano.png",
   },
@@ -60,6 +69,8 @@ const TIMELINE_DATA: TimelineEvent[] = [
     title: "Ábaco Chinês (Suanpan)",
     description:
       "A versão clássica com hastes. Utiliza uma divisória separando as contas superiores (valendo 5) das inferiores (valendo 1).",
+    detailedContent:
+      "O Suanpan popularizou o ábaco em hastes que conhecemos hoje. Ele possui 2 contas na parte superior (Céu) valendo 5 cada, e 5 contas na parte inferior (Terra) valendo 1 cada. Essa redundância (podendo representar o número 15 em uma única haste de várias formas) permitia algoritmos específicos e era útil para contagens hexadecimais de peso usadas na China. A velocidade dos operadores de Suanpan era lendária nas rotas comerciais asiáticas.",
     tag: "Evolução",
     image: "/assets/chines.png",
   },
@@ -70,6 +81,8 @@ const TIMELINE_DATA: TimelineEvent[] = [
     title: "Ábaco Japonês (Soroban)",
     description:
       "Derivado do modelo chinês, eliminou contas redundantes, otimizando cálculos para velocidades extremas que exigem alto raciocínio lógico.",
+    detailedContent:
+      "Quando o Suanpan chegou ao Japão, os matemáticos japoneses perceberam que as contas extras eram desnecessárias para o sistema decimal puro. Eles removeram uma conta do Céu e uma da Terra, criando o formato 1/4. Essa remoção de redundância transformou o Soroban em uma máquina de estado perfeito: cada número de 0 a 9 só tem UMA representação física possível. Isso forçou a mente humana a se adaptar, originando o método de cálculo mental 'Anzan', onde operadores visualizam o ábaco no cérebro e calculam mais rápido que uma calculadora eletrônica.",
     tag: "Otimização",
     image: "/assets/japones.png",
   },
@@ -80,6 +93,8 @@ const TIMELINE_DATA: TimelineEvent[] = [
     title: "Ábaco Russo (Schoty)",
     description:
       "Único por não ter barra divisória. Usa hastes curvadas com 10 contas por linha, sendo amplamente utilizado no comércio local.",
+    detailedContent:
+      "Diferente da linhagem Sino-Japonesa, o Schoty não usa valor bi-quinário (contas que valem 5). Cada haste possui 10 contas, e para representar um número, desliza-se a quantidade de contas da direita para a esquerda. Para facilitar a contagem visual, a 5ª e 6ª conta de cada haste geralmente possuem uma cor diferente (escura). O Schoty foi ensinado em todas as escolas soviéticas até o início da década de 1990.",
     tag: "Variação",
     image: "/assets/russo.png",
   },
@@ -101,9 +116,10 @@ const cardSpring = {
 interface CardProps {
   event: TimelineEvent;
   index: number;
+  onClick: () => void;
 }
 
-function TimelineCard({ event, index }: CardProps) {
+function TimelineCard({ event, index, onClick }: CardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: false, amount: 0.25 });
   const isLeft = index % 2 === 0;
@@ -143,6 +159,7 @@ function TimelineCard({ event, index }: CardProps) {
 
       {/* ── CARD ── */}
       <motion.div
+        layoutId={`card-${event.id}`}
         initial={{ opacity: 0, y: 40, scale: 0.97 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: false, amount: 0.15 }}
@@ -155,12 +172,13 @@ function TimelineCard({ event, index }: CardProps) {
         `}
       >
         <div
+          onClick={onClick}
           className={`
             relative rounded-lg overflow-hidden
-            backdrop-blur-md
+            backdrop-blur-md cursor-pointer
             border transition-all duration-700
             ${isInView ? "border-[#00F5FF]/30" : "border-gray-800"}
-            hover:border-[#00F5FF]/40
+            hover:border-[#00F5FF]/60 hover:shadow-[0_0_30px_rgba(0,245,255,0.15)]
           `}
           style={{
             backgroundColor: "rgba(12, 12, 12, 0.85)",
@@ -172,7 +190,7 @@ function TimelineCard({ event, index }: CardProps) {
           }}
         >
           {/* ── IMAGE CONTAINER ── */}
-          <div className="relative w-full aspect-[16/10] overflow-hidden">
+          <motion.div layoutId={`image-${event.id}`} className="relative w-full aspect-[16/10] overflow-hidden">
             <img
               src={event.image}
               alt={event.title}
@@ -191,7 +209,8 @@ function TimelineCard({ event, index }: CardProps) {
               className="absolute bottom-2 left-3 sm:bottom-3 sm:left-4"
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >
-              <span
+              <motion.span
+                layoutId={`year-${event.id}`}
                 className={`
                   text-lg sm:text-xl md:text-2xl font-bold tracking-wide
                   transition-all duration-500
@@ -204,12 +223,12 @@ function TimelineCard({ event, index }: CardProps) {
                 }}
               >
                 {event.year}
-              </span>
-              <span className="ml-2 sm:ml-3 text-[8px] sm:text-[10px] text-gray-400 tracking-widest uppercase">
+              </motion.span>
+              <motion.span layoutId={`era-${event.id}`} className="ml-2 sm:ml-3 text-[8px] sm:text-[10px] text-gray-400 tracking-widest uppercase">
                 {event.era}
-              </span>
+              </motion.span>
             </div>
-          </div>
+          </motion.div>
 
           {/* ── CONNECTOR LINE (Desktop) ── */}
           <div
@@ -256,12 +275,13 @@ function TimelineCard({ event, index }: CardProps) {
             )}
 
             {/* TITLE */}
-            <h4 className="text-sm sm:text-base md:text-lg font-semibold text-white/90 mb-1 sm:mb-2 tracking-tight">
+            <motion.h4 layoutId={`title-${event.id}`} className="text-sm sm:text-base md:text-lg font-semibold text-white/90 mb-1 sm:mb-2 tracking-tight">
               {event.title}
-            </h4>
+            </motion.h4>
 
             {/* DESCRIPTION */}
-            <p
+            <motion.p
+              layoutId={`desc-${event.id}`}
               className="text-xs sm:text-sm leading-relaxed"
               style={{
                 fontFamily: "'Inter', sans-serif",
@@ -269,7 +289,7 @@ function TimelineCard({ event, index }: CardProps) {
               }}
             >
               {event.description}
-            </p>
+            </motion.p>
           </div>
 
           {/* SUBTLE BOTTOM ACCENT */}
@@ -292,6 +312,8 @@ function TimelineCard({ event, index }: CardProps) {
    ═══════════════════════════════════════════════════ */
 export default function Timeline() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
@@ -340,10 +362,79 @@ export default function Timeline() {
         {/* ════════ EVENTS ════════ */}
         <div className="relative flex flex-col gap-8 sm:gap-14 md:gap-20">
           {TIMELINE_DATA.map((event, index) => (
-            <TimelineCard key={event.id} event={event} index={index} />
+            <TimelineCard key={event.id} event={event} index={index} onClick={() => setSelectedId(event.id)} />
           ))}
         </div>
       </div>
+
+      {/* ════════ EXPANDED MODAL ════════ */}
+      <AnimatePresence>
+        {selectedId && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedId(null)}
+              className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm"
+            />
+            
+            {/* Modal Content */}
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+              {TIMELINE_DATA.filter((e) => e.id === selectedId).map((event) => (
+                <motion.div
+                  key={event.id}
+                  layoutId={`card-${event.id}`}
+                  className="relative w-full max-w-2xl bg-[#090909] rounded-xl overflow-hidden border border-[#00F5FF]/30 shadow-[0_0_50px_rgba(0,245,255,0.1)] pointer-events-auto flex flex-col max-h-[90vh]"
+                >
+                  <button
+                    onClick={() => setSelectedId(null)}
+                    className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/50 hover:bg-[#00F5FF]/20 border border-white/10 hover:border-[#00F5FF]/50 text-white/70 hover:text-[#00F5FF] transition-all duration-300"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+
+                  <motion.div layoutId={`image-${event.id}`} className="relative w-full h-48 sm:h-64 shrink-0">
+                    <img
+                      src={event.image}
+                      alt={event.title}
+                      className="object-cover w-full h-full"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-6" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                      <motion.span layoutId={`year-${event.id}`} className="text-2xl sm:text-3xl font-bold text-[#00F5FF] drop-shadow-[0_0_15px_rgba(0,245,255,0.5)]">
+                        {event.year}
+                      </motion.span>
+                      <motion.span layoutId={`era-${event.id}`} className="ml-3 text-xs text-gray-400 tracking-widest uppercase">
+                        {event.era}
+                      </motion.span>
+                    </div>
+                  </motion.div>
+
+                  <div className="p-6 sm:p-8 overflow-y-auto">
+                    <motion.h3 layoutId={`title-${event.id}`} className="text-2xl sm:text-3xl font-bold text-white/90 mb-4">
+                      {event.title}
+                    </motion.h3>
+                    <motion.p layoutId={`desc-${event.id}`} className="text-sm sm:text-base text-[#00F5FF]/70 mb-6 font-medium">
+                      {event.description}
+                    </motion.p>
+                    
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="text-gray-300 leading-relaxed text-sm sm:text-base space-y-4 border-t border-white/10 pt-6"
+                    >
+                      <p>{event.detailedContent}</p>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
