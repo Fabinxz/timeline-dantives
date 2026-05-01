@@ -116,7 +116,7 @@ const cardSpring = {
 interface CardProps {
   event: TimelineEvent;
   index: number;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 function TimelineCard({ event, index, onClick }: CardProps) {
@@ -322,6 +322,7 @@ function TimelineCard({ event, index, onClick }: CardProps) {
 export default function Timeline() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [modalTop, setModalTop] = useState<number>(0);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -371,26 +372,35 @@ export default function Timeline() {
         {/* ════════ EVENTS ════════ */}
         <div className="relative flex flex-col gap-8 sm:gap-14 md:gap-20">
           {TIMELINE_DATA.map((event, index) => (
-            <TimelineCard key={event.id} event={event} index={index} onClick={() => setSelectedId(event.id)} />
-          ))}
-        </div>
-      </div>
-
-      {/* ════════ EXPANDED MODAL ════════ */}
-      <AnimatePresence>
-        {selectedId && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedId(null)}
-              className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm"
+            <TimelineCard 
+              key={event.id} 
+              event={event} 
+              index={index} 
+              onClick={(e) => {
+                 setModalTop(e.currentTarget.offsetTop);
+                 setSelectedId(event.id);
+              }} 
             />
-            
-            {/* Modal Content */}
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+          ))}
+
+          {/* ════════ EXPANDED MODAL ════════ */}
+          <AnimatePresence>
+            {selectedId && (
+              <>
+                {/* Backdrop */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setSelectedId(null)}
+                  className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm"
+                />
+                
+                {/* Modal Content */}
+                <div 
+                  className="absolute left-0 right-0 z-50 flex justify-center p-4 pointer-events-none"
+                  style={{ top: Math.max(0, modalTop - 50) }}
+                >
               {TIMELINE_DATA.filter((e) => e.id === selectedId).map((event) => (
                 <motion.div
                   key={event.id}
@@ -444,6 +454,8 @@ export default function Timeline() {
           </>
         )}
       </AnimatePresence>
+        </div>
+      </div>
     </section>
   );
 }
