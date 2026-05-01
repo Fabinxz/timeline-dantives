@@ -170,7 +170,7 @@ function TimelineCard({ event, index, onClick, isSelected }: CardProps) {
           w-[calc(100%-2.5rem)] ml-[2.5rem]
           md:w-[calc(50%-40px)] md:ml-0
           ${isLeft ? "md:mr-auto" : "md:ml-auto"}
-          ${isSelected ? "z-30 md:w-[calc(100%-80px)]" : "z-10"}
+          ${isSelected ? "z-30 shadow-[0_0_50px_rgba(0,245,255,0.1)] md:scale-105" : "z-10"}
         `}
       >
         <div
@@ -192,7 +192,23 @@ function TimelineCard({ event, index, onClick, isSelected }: CardProps) {
           }}
         >
           {/* ── IMAGE CONTAINER ── */}
-          <motion.div layout className={`relative w-full overflow-hidden transition-all duration-500 ${isSelected ? "aspect-video md:h-80" : "aspect-[16/10]"}`}>
+          <motion.div layout className={`relative w-full overflow-hidden transition-all duration-500 ${isSelected ? "aspect-video md:h-64" : "aspect-[16/10]"}`}>
+            
+            {/* CLOSE BUTTON */}
+            <AnimatePresence>
+              {isSelected && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  onClick={(e) => { e.stopPropagation(); onClick(); }}
+                  className="absolute top-3 right-3 z-30 p-1.5 rounded-full bg-black/60 hover:bg-[#00F5FF]/20 border border-white/20 hover:border-[#00F5FF]/50 text-white/80 hover:text-[#00F5FF] transition-all backdrop-blur-md"
+                >
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                </motion.button>
+              )}
+            </AnimatePresence>
+
             <img
               src={event.image}
               alt={event.title}
