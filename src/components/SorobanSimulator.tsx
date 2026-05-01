@@ -8,11 +8,11 @@ import { Ghost, Hand, Calculator } from "lucide-react";
    CONSTANTS & CONFIG
    ═══════════════════════════════════════════════════ */
 const NUM_RODS = 13;
-const BEAD_W = 76;
-const BEAD_H = 34;
-const BEAD_GAP = 6;
-const HEAVEN_H = 110;
-const EARTH_H = 220;
+const BEAD_W = 60;
+const BEAD_H = 24;
+const BEAD_GAP = 4;
+const HEAVEN_H = 80;
+const EARTH_H = 160;
 
 const LABELS = [
   "T", "B", "M", "c", "d", "u",
@@ -219,9 +219,9 @@ export default function SorobanSimulator() {
                style={{ backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px)" }} />
 
           {/* Rods Container */}
-          <div className="flex gap-4 md:gap-6">
+          <div className="flex" style={{ gap: "20px" }}>
             {activeRods.map((rod, r) => (
-              <div key={r} className="relative flex flex-col items-center" style={{ width: BEAD_W }}>
+              <div key={r} className="relative flex flex-col items-center flex-shrink-0" style={{ width: BEAD_W, minWidth: BEAD_W }}>
                 
                 {/* Bamboo Rod (Background) */}
                 <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-2.5 bg-gradient-to-r from-[#222] via-[#444] to-[#111] rounded-full shadow-inner" />
@@ -237,7 +237,7 @@ export default function SorobanSimulator() {
                 </div>
 
                 {/* DIVIDER BAR */}
-                <div className="w-24 h-5 bg-gradient-to-r from-[#222] via-[#555] to-[#222] rounded-sm my-1 shadow-md z-30 relative" />
+                <div className="w-[80px] h-4 bg-gradient-to-r from-[#222] via-[#555] to-[#222] rounded-sm my-1 shadow-md z-30 relative flex-shrink-0" />
 
                 {/* EARTH COMPARTMENT */}
                 <div className="relative w-full" style={{ height: EARTH_H }}>
