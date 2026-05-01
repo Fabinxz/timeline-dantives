@@ -116,7 +116,7 @@ const cardSpring = {
 interface CardProps {
   event: TimelineEvent;
   index: number;
-  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onClick: (offsetTop: number) => void;
 }
 
 function TimelineCard({ event, index, onClick }: CardProps) {
@@ -172,7 +172,9 @@ function TimelineCard({ event, index, onClick }: CardProps) {
         `}
       >
         <div
-          onClick={onClick}
+          onClick={() => {
+            if (ref.current) onClick(ref.current.offsetTop);
+          }}
           className={`
             group relative rounded-lg overflow-hidden
             backdrop-blur-md cursor-pointer
@@ -376,8 +378,8 @@ export default function Timeline() {
               key={event.id} 
               event={event} 
               index={index} 
-              onClick={(e) => {
-                 setModalTop(e.currentTarget.offsetTop);
+              onClick={(offsetTop) => {
+                 setModalTop(offsetTop);
                  setSelectedId(event.id);
               }} 
             />
@@ -393,7 +395,7 @@ export default function Timeline() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => setSelectedId(null)}
-                  className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm"
+                  className="fixed inset-0 z-40 bg-[#050505]/95 backdrop-blur-sm"
                 />
                 
                 {/* Modal Content */}
