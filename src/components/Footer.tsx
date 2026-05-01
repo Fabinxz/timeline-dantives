@@ -60,6 +60,7 @@ export default function Footer() {
             Membros do Grupo
           </p>
           <div className="flex flex-col gap-1 text-[10px] sm:text-[11px] text-white/50 tracking-[1px] uppercase text-center md:text-left">
+            <span className="text-[#00F5FF]/60 mb-2 border-b border-[#00F5FF]/10 pb-1">Docente: Cláudio Fabiano Motta Toledo</span>
             <span>Elisa Chen Huang</span>
             <span>Fábio Machado da Silva</span>
             <span>Sabrina Ayumi Cardoso</span>

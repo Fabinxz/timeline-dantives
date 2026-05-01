@@ -55,7 +55,10 @@ function Bead({ active, isHeaven, index = 0, activeCount = 0, onClick, disabled 
     <motion.div
       layout
       initial={false}
-      transition={{ type: "spring", stiffness: 50, damping: 20, mass: 1 }}
+      transition={disabled 
+        ? { type: "spring", stiffness: 50, damping: 20, mass: 1 } // Slow and didactic for Tutor Mode
+        : { type: "spring", stiffness: 350, damping: 28, mass: 0.5 } // Ultra responsive for Manual Mode
+      }
       onClick={() => { if (!disabled) onClick(); }}
       className={`absolute left-1/2 -translate-x-1/2 ${active ? 'z-20' : 'z-10'} ${disabled ? 'cursor-default' : 'cursor-pointer'}`}
       style={{
