@@ -85,12 +85,7 @@ function VideoCard({ title, subtitle, description, thumbnail, icon, duration, ur
 
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
           <div className="flex items-center gap-2 text-[10px] font-mono text-white/30 uppercase tracking-widest">
-            {isAvailable ? (
-              <>
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
-                Disponível
-              </>
-            ) : (
+            {!isAvailable && (
               <>
                 <Info className="w-3 h-3" />
                 Em breve
@@ -134,7 +129,7 @@ export default function VideoExhibition() {
       title: "Operando o Soroban na Prática",
       subtitle: "HANDS-ON",
       description: "Deixe a teoria de lado por um momento. Neste tutorial em vídeo, a Sabrina demonstra o uso real e físico de um Soroban. Entenda na prática como representar números, realizar operações básicas e sinta a mecânica tátil do cálculo manual que inspirou a lógica dos processadores modernos.",
-      thumbnail: "/video_tutorial_thumb_1777654260013.png",
+      thumbnail: "https://img.youtube.com/vi/Vu3cNhpVjXo/maxresdefault.jpg",
       icon: <GraduationCap className="w-5 h-5" />,
       duration: "03:42",
       url: "https://youtu.be/Vu3cNhpVjXo"
