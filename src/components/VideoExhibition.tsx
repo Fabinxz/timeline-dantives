@@ -146,9 +146,9 @@ export default function VideoExhibition() {
       title: "Do Ábaco à Ciência da Computação",
       subtitle: "HISTÓRIA DA COMPUTAÇÃO",
       description: "Qual a verdadeira relação entre os primeiros instrumentos de cálculo da humanidade e os computadores atuais? Este minidocumentário explora a linha do tempo geral do ábaco e discute como a necessidade humana de abstrair e automatizar o processamento de dados deu origem à computação discreta.",
-      thumbnail: "", // Removed thumbnail as requested
+      thumbnail: "https://img.youtube.com/vi/1cYJraNGVI0/maxresdefault.jpg",
       icon: <BookOpen className="w-5 h-5" />,
-      duration: "12:20"
+      youtubeId: "1cYJraNGVI0"
     }
   ];
 
