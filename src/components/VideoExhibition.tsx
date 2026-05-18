@@ -146,9 +146,9 @@ export default function VideoExhibition() {
       title: "A Evolução Histórica do Ábaco",
       subtitle: "EVOLUÇÃO DO CÁLCULO",
       description: "Explore como os instrumentos de cálculo se desenvolveram a partir de necessidades materiais e sociais. Neste minidocumentário, Victor analisa a jornada do ábaco — desde as linhas de areia na Grécia Antiga e tábuas romanas, até sua consolidação na Ásia e o conflito cultural na Europa que levou à adoção dos numerais indo-arábicos.",
-      thumbnail: "https://img.youtube.com/vi/1cYJraNGVI0/maxresdefault.jpg",
+      thumbnail: "https://img.youtube.com/vi/qHkE3mkIgNQ/maxresdefault.jpg",
       icon: <BookOpen className="w-5 h-5" />,
-      youtubeId: "1cYJraNGVI0"
+      youtubeId: "qHkE3mkIgNQ"
     }
   ];
 
