@@ -143,9 +143,9 @@ export default function VideoExhibition() {
       youtubeId: "Vu3cNhpVjXo"
     },
     {
-      title: "Do Ábaco à Ciência da Computação",
-      subtitle: "HISTÓRIA DA COMPUTAÇÃO",
-      description: "Qual a verdadeira relação entre os primeiros instrumentos de cálculo da humanidade e os computadores atuais? Este minidocumentário explora a linha do tempo geral do ábaco e discute como a necessidade humana de abstrair e automatizar o processamento de dados deu origem à computação discreta.",
+      title: "A Evolução Histórica do Ábaco",
+      subtitle: "EVOLUÇÃO DO CÁLCULO",
+      description: "Explore como os instrumentos de cálculo se desenvolveram a partir de necessidades materiais e sociais. Neste minidocumentário, Victor analisa a jornada do ábaco — desde as linhas de areia na Grécia Antiga e tábuas romanas, até sua consolidação na Ásia e o conflito cultural na Europa que levou à adoção dos numerais indo-arábicos.",
       thumbnail: "https://img.youtube.com/vi/1cYJraNGVI0/maxresdefault.jpg",
       icon: <BookOpen className="w-5 h-5" />,
       youtubeId: "1cYJraNGVI0"
